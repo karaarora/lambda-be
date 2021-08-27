@@ -1,7 +1,5 @@
 const mathUtils = {
-    sum: (a, b) => {
-        return a + b
-    }
-}
+  sum: (a, b) => a + b,
+};
 
-module.exports = mathUtils 
+module.exports = mathUtils;

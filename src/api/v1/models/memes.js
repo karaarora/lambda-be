@@ -17,6 +17,20 @@ const memeSchema = new Schema({
     type: String,
     required: true,
   },
+  created: {
+    type: Date,
+    required: true,
+  },
+  view_count: {
+    type: [String],
+  },
+  state: {
+    type: String,
+  },
+  status: {
+    type: String,
+    required: true,
+  },
 });
 
 // eslint-disable-next-line new-cap
