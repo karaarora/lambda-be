@@ -7,7 +7,7 @@ module.exports = async (request) => {
     'Content-Type': 'application/json',
   };
   try {
-    const { filters } = request.body;
+    const filters = request.body && request.body.filters;
     if (objUtils.isEmpty(filters)) {
       return {
         headers,
