@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/c347cd08-0145-4bfc-b969-eca9d351c265/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/lambda-be",
+  "appService.deploySubpath": "."
+}
