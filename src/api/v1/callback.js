@@ -3,7 +3,7 @@ module.exports = function callback(controller) {
     controller(req)
       .then((httpResponse) => {
         res.type('json');
-        res.send(httpResponse.body);
+        res.status(httpResponse.statusCode).send(httpResponse.body);
       })
       .catch(() => res.status(500).send({ error: 'An unkown error occurred.' }));
   };

@@ -9,7 +9,7 @@ module.exports = async (request) => {
     return {
       headers,
       statusCode: statusCodes.SUCCESS_OK,
-      body: await Meme.findOne({ _id: request.body.id }),
+      body: await Meme.findOne({ _id: request.query.id }),
     };
   } catch (e) {
     return {

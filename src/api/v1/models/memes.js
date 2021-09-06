@@ -17,20 +17,27 @@ const memeSchema = new Schema({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+  },
   created: {
     type: Date,
     required: true,
   },
   view_count: {
     type: [String],
+    get: (v) => v.length,
   },
   state: {
     type: String,
   },
   status: {
     type: String,
-    required: true,
   },
+}, {
+  toObject: { getters: true, setters: true },
+  toJSON: { getters: true, setters: true },
+  runSettersOnQuery: true,
 });
 
 // eslint-disable-next-line new-cap

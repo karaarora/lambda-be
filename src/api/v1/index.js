@@ -1,16 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
+const cors = require('cors');
 
 const app = express();
 
-app.use(bodyParser.urlencoded({
-  extended: true,
-}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb', extended: true }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(session({
   secret: 'secretcode',
@@ -25,10 +23,7 @@ app.use(passport.session());
 
 require('../../config/constants/passportConfig')(passport);
 
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true,
-}));
+app.use(cors());
 
 require('dotenv').config();
 
