@@ -4,7 +4,6 @@ const getMemesController = require('../controllers/getMemesController');
 const saveMemeController = require('../controllers/saveMemeController');
 const authController = require('../controllers/authController');
 const detailsMemeController = require('../controllers/detailMemeController');
-// const loginController = require('../controllers/login/Controller');
 const pingController = require('../controllers/pingController');
 
 module.exports = (app, passport) => {
