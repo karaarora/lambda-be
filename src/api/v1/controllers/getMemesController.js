@@ -86,6 +86,7 @@ module.exports = async (request) => {
           statusOptions,
           query,
         },
+        total: await Meme.countDocuments({}),
         listings: await Meme.find(newFilters).skip(((page || 1) - 1) * 10)
           .limit(20)
           .sort(getSortOrder(sort)),
