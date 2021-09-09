@@ -34,11 +34,12 @@ module.exports = {
     });
   },
   register: async (request) => {
+    console.log("Hola")
     const headers = {
       'Content-Type': 'application/json',
     };
     try {
-      const doc = await User.findOne({ username: request.body.username })
+      const doc = await User.findOne({ username: request.body.username });
       if (doc) {
         return {
           headers,
@@ -46,8 +47,8 @@ module.exports = {
           body: 'User already exists',
         };
       }
+      console.log(request.body)
       const newUser = new User({
-        email: request.body.email,
         username: request.body.username,
         password: await bcrypt.hash(request.body.password, 10),
       });
