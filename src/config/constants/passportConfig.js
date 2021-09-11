@@ -1,20 +1,23 @@
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
+// const LocalStrategy = require("passport-local").Strategy;
+const { Strategy, ExtractJwt } = require('passport-jwt');
+// const bcrypt = require('bcryptjs');
+
 const User = require('../../api/v1/models/users');
 
 module.exports = (passport) => {
-  passport.use('local',
-    new LocalStrategy((username, password, done) => {
-      User.findOne({ username }, (err, user) => {
-        if (err) throw err;
-        if (!user) return done(null, false);
-        return bcrypt.compare(password, user.password, (error, result) => {
-          if (error) throw err;
-          if (result) {
-            return done(null, user);
-          }
-          return done(null, false);
-        });
+  passport.use('jwt',
+    new Strategy({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.SECRET,
+    }, (jwtPayload, done) => {
+      User.findOne({ _id: jwtPayload.id }, (err, user) => {
+        if (err) {
+          return done(err, false);
+        }
+        if (user) {
+          return done(null, user);
+        }
+        return done(null, false);
       });
     }));
 

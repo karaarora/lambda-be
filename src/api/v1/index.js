@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const cors = require('cors');
 
+require('dotenv').config();
+
 const app = express();
 
 app.use(bodyParser.json({ limit: '10mb', extended: true }));
