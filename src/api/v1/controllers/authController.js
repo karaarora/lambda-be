@@ -1,38 +1,55 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/users');
 const statusCodes = require('../../../config/constants/statusCodes');
+const authUtils = require('../utils/authUtils');
 
 module.exports = {
-  login: (passport) => (req, res) => {
+  login: async (request) => {
     const headers = {
       'Content-Type': 'application/json',
     };
-    try {
-      return passport.authenticate('local', (err, user) => {
-        if (err) {
-          throw new Error();
-        }
-        if (user) {
-          req.logIn(user, (error) => {
-            if (error) {
-              throw new Error();
-            }
-            req.send({
-              headers,
-              statusCode: statusCodes.SUCCESS_OK,
-              body: 'User logged in successfully',
-            });
-          });
-        }
-        throw new Error();
-      });
-    } catch (e) {
-      req.send({
+    const result = await User.findOne({ username: request.body.username });
+    const match = await bcrypt.compare(request.body.password, result.password);
+    if (match) {
+      const params = {
+        user: result.username,
+        // eslint-disable-next-line no-underscore-dangle
+        id: result._id,
+      };
+      const token = await jwt.sign(params, process.env.SECRET);
+      return {
         headers,
-        statusCode: statusCodes.ERROR_INTERNAL,
-        body: 'Some error occued in Login.',
-      });
+        statusCode: statusCodes.SUCCESS_OK,
+        body: {
+          username: result.username,
+          token,
+        },
+      };
     }
+    return {
+      headers,
+      statusCode: statusCodes.ERROR_INTERNAL,
+      body: 'User not found',
+    };
+  },
+  getUser: async (request) => {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (request.headers && request.headers.authorization) {
+      return {
+        headers,
+        statusCode: statusCodes.SUCCESS_OK,
+        body: authUtils.getUser(request.headers.authorization),
+      };
+    }
+    return {
+      headers,
+      statusCode: statusCodes.ERROR_INTERNAL,
+      body: 'Unauthorized',
+    };
   },
   register: async (request) => {
     const headers = {

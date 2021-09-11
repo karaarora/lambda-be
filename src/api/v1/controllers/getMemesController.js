@@ -2,6 +2,8 @@ const statusCodes = require('../../../config/constants/statusCodes');
 const sortOptionsMap = require('../../../config/constants/sortOptions');
 const statusOptionsMap = require('../../../config/constants/statusOptions');
 const Meme = require('../models/memes');
+const authUtils = require('../utils/authUtils');
+const objUtils = require('../utils/objUtils');
 
 function getSortOrder(sort) {
   const sortFilter = {};
@@ -24,6 +26,8 @@ module.exports = async (request) => {
       type,
     } = request.query;
     let { sort, status } = request.query;
+    const user = authUtils.getUser(request.headers.authorization);
+
     const newFilters = {};
     if (query) {
       newFilters.heading = { $regex: query, $options: 'i' };
@@ -49,6 +53,11 @@ module.exports = async (request) => {
         isSelected: key === status,
       })),
     };
+
+    if (objUtils.isEmpty(user)) {
+      statusOptions.options = [statusOptions.options[0]];
+    }
+
     if (status) {
       newFilters.status = status;
     }

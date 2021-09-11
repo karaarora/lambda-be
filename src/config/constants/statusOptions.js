@@ -7,9 +7,11 @@ module.exports = [
   {
     displayText: 'Saved',
     key: 'SAVED',
+    isAuthOnly: true,
   },
   {
     displayText: 'Published',
     key: 'PUBLISHED',
+    isAuthOnly: true,
   },
 ];
