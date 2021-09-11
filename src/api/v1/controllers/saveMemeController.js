@@ -1,7 +1,20 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 
 const statusCodes = require('../../../config/constants/statusCodes');
+const dbConfig = require('../../../config/constants/dbConfig');
 const Meme = require('../models/memes');
+
+const uploadImage = async (memeData, base64) => {
+  const client = await BlobServiceClient.fromConnectionString(process.env.AZURE_BLOB);
+  const container = dbConfig.AZURE_CONTAINER;
+  const containerClient = await client.getContainerClient(container);
+  const blobName = `${memeData.heading}__${memeData.user_id}__${memeData.created}.png`;
+  const blobClient = containerClient.getBlockBlobClient(blobName);
+  const buffer = Buffer.from(base64, 'base64');
+
+  await blobClient.upload(buffer, buffer.length);
+  return `https://thememestudio.blob.core.windows.net/thememestudio/${blobName}`;
+};
 
 module.exports = async (request) => {
   try {
@@ -11,28 +24,31 @@ module.exports = async (request) => {
       created: new Date(),
       view_count: [],
       state: request.body.state,
-      status: request.body.status,
+      status: request.body.status || 'ALL',
+      type: request.body.type,
     };
 
-    const client = await BlobServiceClient.fromConnectionString(process.env.AZURE_BLOB);
-    const container = 'thememestudio';
-    const containerClient = await client.getContainerClient(container);
-    const blobName = `${memeData.heading}__${memeData.user_id}__${memeData.created}.png`;
-    const blobClient = containerClient.getBlockBlobClient(blobName);
-    const buffer = Buffer.from(request.body.image, 'base64');
+    const imageUrl = await uploadImage(memeData, request.body.image);
 
-    await blobClient.upload(buffer, buffer.length);
+    memeData.image_url = imageUrl;
+    memeData.thumbnail_url = imageUrl;
 
-    memeData.image_url = `https://thememestudio.blob.core.windows.net/thememestudio/${blobName}`;
-    memeData.thumbnail_url = `https://thememestudio.blob.core.windows.net/thememestudio/${blobName}`;
     const newMeme = new Meme(memeData);
 
-    await newMeme.save();
+    if (request.body.meme_id) {
+      return {
+        statusCode: statusCodes.SUCCESS_OK,
+        body: {
+          message: 'Meme saved',
+          data: await Meme.findOneAndUpdate({ _id: request.body.meme_id }, memeData),
+        },
+      };
+    }
     return {
       statusCode: statusCodes.SUCCESS_OK,
       body: {
         message: 'Meme saved',
-        data: memeData,
+        data: await newMeme.save(),
       },
     };
   } catch (e) {

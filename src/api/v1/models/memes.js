@@ -8,6 +8,7 @@ const memeSchema = new Schema({
   user_id: {
     type: String,
     required: true,
+    index: true,
   },
   thumbnail_url: {
     type: String,
@@ -30,9 +31,11 @@ const memeSchema = new Schema({
   },
   state: {
     type: String,
+    index: true,
   },
   status: {
     type: String,
+    index: true,
   },
 }, {
   toObject: { getters: true, setters: true },

@@ -1,4 +1,6 @@
 const statusCodes = require('../../../config/constants/statusCodes');
+const sortOptionsMap = require('../../../config/constants/sortOptions');
+const statusOptionsMap = require('../../../config/constants/statusOptions');
 const Meme = require('../models/memes');
 
 function getSortOrder(sort) {
@@ -19,64 +21,40 @@ module.exports = async (request) => {
     const {
       query,
       page,
-      sort,
-      status,
+      type,
     } = request.query;
+    let { sort, status } = request.query;
     const newFilters = {};
     if (query) {
       newFilters.heading = { $regex: query, $options: 'i' };
     }
+
+    if (!sort) sort = (sortOptionsMap.find((option) => option.isDefault) || {}).key;
+    if (!status) status = (statusOptionsMap.find((option) => option.isDefault) || {}).key;
+
     const sortOptions = {
       title: 'Sort By',
-      options: [
-        {
-          displayText: 'Most viewed',
-          key: 'VIEWED',
-        },
-        {
-          displayText: 'Trending',
-          key: 'TRENDING',
-        },
-        {
-          displayText: 'Latest',
-          key: 'LATEST',
-        },
-        {
-          displayText: 'Earliest',
-          key: 'EARLIEST',
-        },
-      ],
+      options: sortOptionsMap.map(({ displayText, key }) => ({
+        displayText,
+        key,
+        isSelected: key === sort,
+      })),
     };
+
     const statusOptions = {
-      title: 'Your memes',
-      options: [
-        {
-          displayText: 'Saved',
-          key: 'SAVED',
-        },
-        {
-          displayText: 'Most viewed',
-          key: 'PUBLISHED',
-        },
-      ],
+      title: 'Your Memes',
+      options: statusOptionsMap.map(({ displayText, key }) => ({
+        displayText,
+        key,
+        isSelected: key === status,
+      })),
     };
     if (status) {
       newFilters.status = status;
     }
-    sortOptions.options.forEach((option) => {
-      if (option.key === sort) {
-        option.isSelected = true;
-      } else {
-        option.isSelected = false;
-      }
-    });
-    statusOptions.options.forEach((option) => {
-      if (option.key === status) {
-        option.isSelected = true;
-      } else {
-        option.isSelected = false;
-      }
-    });
+    if (type) {
+      newFilters.type = type;
+    }
     return {
       headers,
       statusCode: statusCodes.SUCCESS_OK,
@@ -85,8 +63,9 @@ module.exports = async (request) => {
           sortOptions,
           statusOptions,
           query,
+          page,
         },
-        total: await Meme.countDocuments({}),
+        total: await Meme.countDocuments(newFilters),
         listings: await Meme.find(newFilters).skip(((page || 1) - 1) * 10)
           .limit(20)
           .sort(getSortOrder(sort)),
