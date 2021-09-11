@@ -14,7 +14,17 @@ app.use(session({
   secret: 'secretcode',
   resave: true,
   saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24,
+    httpOnly: true,
+    signed: true,
+  },
 }));
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.isAuthenticated();
+  next();
+});
 
 app.use(cookieParser('secretcode'));
 

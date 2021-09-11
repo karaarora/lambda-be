@@ -3,38 +3,38 @@ const User = require('../models/users');
 const statusCodes = require('../../../config/constants/statusCodes');
 
 module.exports = {
-  login: (passport) => (request) => {
+  login: (passport) => (req, res) => {
     const headers = {
       'Content-Type': 'application/json',
     };
-    return new Promise((resolve) => {
-      passport.authenticate('local', (err, user) => {
+    try {
+      return passport.authenticate('local', (err, user) => {
+        if (err) {
+          throw new Error();
+        }
         if (user) {
-          request.logIn(user, (error) => {
+          req.logIn(user, (error) => {
             if (error) {
-              resolve({
-                headers,
-                statusCode: statusCodes.ERROR_INTERNAL,
-                body: 'Some error occued in Login',
-              });
+              throw new Error();
             }
-            resolve({
+            req.send({
               headers,
               statusCode: statusCodes.SUCCESS_OK,
               body: 'User logged in successfully',
             });
           });
         }
-        resolve({
-          headers,
-          statusCode: statusCodes.ERROR_INTERNAL,
-          body: 'Some error occued in Login',
-        });
+        throw new Error();
       });
-    });
+    } catch (e) {
+      req.send({
+        headers,
+        statusCode: statusCodes.ERROR_INTERNAL,
+        body: 'Some error occued in Login.',
+      });
+    }
   },
   register: async (request) => {
-    console.log("Hola")
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -47,7 +47,6 @@ module.exports = {
           body: 'User already exists',
         };
       }
-      console.log(request.body)
       const newUser = new User({
         username: request.body.username,
         password: await bcrypt.hash(request.body.password, 10),
@@ -56,7 +55,7 @@ module.exports = {
       return {
         headers,
         statusCode: statusCodes.SUCCESS_OK,
-        body: 'User regitered',
+        body: 'User registered',
       };
     } catch (e) {
       return {
