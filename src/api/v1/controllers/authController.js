@@ -11,10 +11,17 @@ module.exports = {
       'Content-Type': 'application/json',
     };
     const result = await User.findOne({ username: request.body.username });
+    if (!result) {
+      return {
+        headers,
+        statusCode: statusCodes.ERROR_INTERNAL,
+        body: 'User not found/Incorrect password',
+      };
+    }
     const match = await bcrypt.compare(request.body.password, result.password);
     if (match) {
       const params = {
-        user: result.username,
+        username: result.username,
         // eslint-disable-next-line no-underscore-dangle
         id: result._id,
       };
@@ -24,6 +31,7 @@ module.exports = {
         statusCode: statusCodes.SUCCESS_OK,
         body: {
           username: result.username,
+          id: result.id,
           token,
         },
       };
@@ -31,7 +39,7 @@ module.exports = {
     return {
       headers,
       statusCode: statusCodes.ERROR_INTERNAL,
-      body: 'User not found',
+      body: 'User not found/Incorrect password',
     };
   },
   getUser: async (request) => {
@@ -60,7 +68,7 @@ module.exports = {
       if (doc) {
         return {
           headers,
-          statusCode: statusCodes.SUCCESS_OK,
+          statusCode: statusCodes.ERROR_REQ,
           body: 'User already exists',
         };
       }

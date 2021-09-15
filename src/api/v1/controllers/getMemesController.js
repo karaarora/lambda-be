@@ -56,6 +56,8 @@ module.exports = async (request) => {
 
     if (objUtils.isEmpty(user)) {
       statusOptions.options = [statusOptions.options[0]];
+    } else if (!request.query.showAllMemes) {
+      newFilters.user = user.id;
     }
 
     if (status) {
@@ -75,9 +77,11 @@ module.exports = async (request) => {
           page,
         },
         total: await Meme.countDocuments(newFilters),
-        listings: await Meme.find(newFilters).skip(((page || 1) - 1) * 10)
+        listings: await Meme.find(newFilters, 'id thumbnail_url image_url heading likes dislikes type')
+          .skip(((page || 1) - 1) * 10)
           .limit(20)
-          .sort(getSortOrder(sort)),
+          .sort(getSortOrder(sort))
+          .populate('user createdBy', 'id username'),
       },
     };
   } catch (e) {
