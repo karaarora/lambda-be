@@ -5,14 +5,28 @@ const memeSchema = new Schema({
     type: String,
     required: true,
   },
-  user_id: {
-    type: String,
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
     index: true,
   },
   thumbnail_url: {
     type: String,
     required: true,
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    index: true,
+  },
+  likes: {
+    type: [Schema.Types.ObjectId],
+    ref: 'User',
+  },
+  dislikes: {
+    type: [Schema.Types.ObjectId],
+    ref: 'User',
   },
   image_url: {
     type: String,
