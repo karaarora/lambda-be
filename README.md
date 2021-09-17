@@ -4,6 +4,9 @@ We live in a **`Meme`** 🔥 world, THE **`MEME`** STUDIO is one place where you
 
 Once you find a **`Meme`** worthy enough you can either share it or like 👍 the **`Meme`**.
 
+Check if backend service is up here:
+https://lambda-be.azurewebsites.net/ping
+
 ## Documentation
 
 https://documenter.getpostman.com/view/15222783/U16gNS2X
