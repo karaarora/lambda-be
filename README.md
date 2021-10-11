@@ -7,6 +7,29 @@ Once you find a **`Meme`** worthy enough you can either share it or like 👍 th
 Check if backend service is up here:
 https://lambda-be.azurewebsites.net/ping
 
+## Table of content
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="https://github.com/karaarora/lambda-fe">Frontend Repo</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#documentation">Documentation</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#tools-and-packages">Tools and Packages Used</a></li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+  </ol>
+</details>
+
 ## Documentation
 
 https://documenter.getpostman.com/view/15222783/U16gNS2X
@@ -26,7 +49,7 @@ npm install
 npm start
 ```
 
-## Tools/Packages Used
+## Tools and Packages
 * Express server
 * PassportJS for Authentication
 * Azure Blob storage for image storage
